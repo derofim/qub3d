@@ -43,11 +43,13 @@ set(headers_dir ${PROJECT_SOURCE_DIR}/source/include)
 set(client_sources
   ${source_dir}/main.cpp
   ${source_dir}/camera.cpp
+  ${source_dir}/chunk.cpp
 )
 
 set(clientHeaders
    ${headers_dir}/client.hpp
    ${headers_dir}/camera.hpp
+   ${headers_dir}/chunk.hpp
 )
 
 if(APPLE)

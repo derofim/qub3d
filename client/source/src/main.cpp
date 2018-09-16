@@ -13,6 +13,7 @@
 #include <algorithm>
 
 #include "camera.hpp"
+#include "chunk.hpp"
 
 using namespace viking;
 
@@ -208,47 +209,8 @@ void loadOBJ(std::string location, std::vector<uint16_t> &out_vertex_index,
 	}
 }
 
-class Chunk
-{
-  public:
-	Chunk()
-	{
-		block_buffer = renderer->createUniformBuffer(&block_positions, sizeof(glm::mat4), 16 * 16 * 256, ShaderStage::VERTEX_SHADER, 2);
-
-		model_pool->attachBuffer(0, block_buffer);
-
-		for (int x = 0; x < 16; x++)
-		{
-			for (int y = 0; y < 256; y++)
-			{
-				for (int z = 0; z < 16; z++)
-				{
-					// Create a position for the model
-					glm::mat4 model_position = glm::mat4(1.0f);
-					// Move the model to a location
-					model_position = glm::translate(model_position, glm::vec3(x, y, z));
-
-					// Create a model
-					IModel *model = model_pool->createModel();
-					// Set its data to buffer 0
-					model->SetData(0, &model_position);
-					models.push_back(model);
-				}
-			}
-		}
-	}
-	void Update()
-	{
-		block_buffer->setData();
-	}
-	glm::mat4 block_positions[16 * 16 * 256];
-	IUniformBuffer *block_buffer;
-	std::vector<IModel *> models;
-};
-
 int main(int argc, char *argv[])
 {
-
 	const RenderingAPI renderingAPI = RenderingAPI::GL3;
 	const WindowingAPI windowAPI = WindowingAPI::SDL;
 
@@ -289,7 +251,8 @@ int main(int argc, char *argv[])
 	IUniformBuffer *camera_buffer = renderer->createUniformBuffer(&cameraUniformBuffer, sizeof(CameraUniformBufferData), 1, ShaderStage::VERTEX_SHADER, 1);
 	model_pool->attachBuffer(camera_buffer);
 
-	Chunk *chunk = new Chunk();
+	qub3d::Chunk *chunk = new qub3d::Chunk;
+	chunk->createMesh(renderer, model_pool);
 
 	qub3d::Camera cameraController((SDL_Window*) window->getNativeWindowHandle());
 
